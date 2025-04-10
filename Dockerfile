@@ -4,8 +4,12 @@ FROM php:8.2-apache
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     unzip \
-    libonig-dev \
     libxml2-dev \
+    zlib1g-dev \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    libicu-dev \
+    libonig-dev \
     && docker-php-ext-install \
     bcmath \
     ctype \
@@ -15,22 +19,17 @@ RUN apt-get update && apt-get install -y \
     pdo_mysql \
     tokenizer \
     xml \
-    && docker-php-ext-enable \
-    bcmath \
-    ctype \
-    fileinfo \
-    mbstring \
-    pdo \
-    tokenizer \
-    xml
+    zip
 
-# Instala extensões adicionais
-RUN a2enmod rewrite && service apache2 restart
+# Ativa o mod_rewrite do Apache
+RUN a2enmod rewrite
 
-# Copia os arquivos do projeto
+# Define o diretório de trabalho
 WORKDIR /var/www/html
+
+# Copia os arquivos da aplicação
 COPY . /var/www/html
 
-# Corrige permissões
+# Permissões (opcional)
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
