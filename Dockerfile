@@ -1,36 +1,31 @@
-# Usa uma imagem base com PHP 8.2 e Apache
 FROM php:8.2-apache
 
-# Instala dependências do sistema e extensões do PHP
+# Instala as dependências necessárias
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     libpng-dev \
-    libonig-dev \
     libxml2-dev \
     unzip \
     && docker-php-ext-install \
     bcmath \
-    ctype \
-    fileinfo \
-    json \
     mbstring \
-    openssl \
     pdo \
     pdo_mysql \
     tokenizer \
-    xml
+    xml \
+    && docker-php-ext-enable opcache
 
-# Habilita o mod_rewrite do Apache (comum para muitas aplicações PHP)
+# Habilita o mod_rewrite do Apache (muito comum em apps PHP)
 RUN a2enmod rewrite
 
-# Define o diretório de trabalho dentro do container
+# Define diretório de trabalho
 WORKDIR /var/www/html
 
-# Copia os arquivos da aplicação para o container (ajuste conforme sua estrutura)
-COPY . /var/www/html
+# Copia os arquivos da aplicação
+COPY . .
 
-# Dá permissões (ajuste conforme necessário)
+# Dá permissões ao Apache
 RUN chown -R www-data:www-data /var/www/html
 
-# Expõe a porta padrão do Apache
+# Expõe a porta padrão
 EXPOSE 80
